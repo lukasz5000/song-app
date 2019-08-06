@@ -13,7 +13,7 @@ export const groupSongsToAlbums = (songs: SongDto[]): Album[] => {
             songs: e.map((song: SongDto) => song.song)
         };
 
-        albumId += albumId;
+        albumId += 1;
 
         return returnElement;
     });
