@@ -1,44 +1,52 @@
-import {ADD_NEW_COORDINATES, CoordinatesAction, GET_ALL_COORDINATES, GET_NEW_COORDINATES} from "./actionsTypes";
+import {Album, SongDto} from "../models";
 import {ThunkAction} from "redux-thunk";
 import {AppState} from "../reducers/rootReducer";
 import {Action} from "redux";
-import {CoordinatesElement, CoordinatesList} from "../models";
-import {getAllCoordinatesHttp, getNewCoordinatesHttp, saveCoordinatesHttp} from "../api";
+import {getAllSongs} from "../api";
+import {AxiosResponse} from "axios";
+import {groupSongsToAlbums} from "../services/albumService";
 
-// ACTIONS
+// action types
 
-export const getAllCoordinates = (payload: CoordinatesList): CoordinatesAction => ({
-    type: GET_ALL_COORDINATES,
+export const SET_ALBUMS = 'SET_ALBUMS';
+export const TOGGLE_ALBUM = 'TOGGLE_ALBUM';
+export const TOGGLE_ALL_ALBUMS = 'TOGGLE_ALL_ALBUMS';
+
+export type setAlbums = {
+    type: typeof SET_ALBUMS,
+    payload: Album[],
+};
+
+export type toggleAlbum = {
+    type: typeof TOGGLE_ALBUM,
+    payload: number;
+};
+
+export type toggleAlbums = {
+    type: typeof TOGGLE_ALL_ALBUMS,
+};
+
+export type AlbumsAction = setAlbums | toggleAlbum | toggleAlbums;
+
+// actions
+
+export const toggleAlbum = (payload: number): AlbumsAction => ({
+    type: TOGGLE_ALBUM,
     payload,
 });
 
-export const getNewCoordinates = (coordinates: CoordinatesList): CoordinatesAction => ({
-    type: GET_NEW_COORDINATES,
-    payload: coordinates,
+export const toggleAlbums = (): AlbumsAction => ({
+    type: TOGGLE_ALL_ALBUMS,
 });
 
-export const addNewCoordinates = (coordinates: CoordinatesElement): CoordinatesAction => ({
-    type: ADD_NEW_COORDINATES,
-    payload: coordinates,
+export const setAlbums = (payload: Album[]): AlbumsAction => ({
+    type: SET_ALBUMS,
+    payload,
 });
 
-// ACTION CREATORS
-
-export const downloadCoordinates = (): ThunkAction<void, AppState, null, Action<string>> => (dispatch: any) => {
-    getAllCoordinatesHttp.then((response) => {
-        dispatch(getAllCoordinates(response.data as CoordinatesList));
+export const downloadAllSongs = (): ThunkAction<void, AppState, null, Action<string>> => (dispatch) => {
+    getAllSongs.then((response: AxiosResponse<SongDto[]>) => {
+        const albums: Album[] = groupSongsToAlbums(response.data);
+        dispatch(setAlbums(albums));
     });
-};
-
-export const downloadNewCoordinates = (): ThunkAction<void, AppState, null, Action<string>> => (dispatch, getState: () => AppState) => {
-    const coordinates: CoordinatesList = getState().coordinates.coordinates;
-    const lastCoordinates = coordinates[coordinates.length - 1] as Required<CoordinatesElement>;
-    getNewCoordinatesHttp(lastCoordinates.id + 1).then((response) => {
-        dispatch(getNewCoordinates(response.data));
-    });
-};
-
-export const saveCoordinates = (coordinates: CoordinatesElement): ThunkAction<void, AppState, null, Action<string>> => (dispatch) => {
-    saveCoordinatesHttp(coordinates);
-    dispatch(addNewCoordinates(coordinates));
 };

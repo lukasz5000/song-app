@@ -1,8 +1,8 @@
 import {combineReducers} from "redux";
-import {coordinatesReducer} from "./coordinatesReducer";
+import {albumsReducer} from "./albumsReducer";
 
 export const rootReducer = combineReducers({
-    coordinates: coordinatesReducer,
+    albums: albumsReducer,
 });
 
 export type AppState = ReturnType<typeof rootReducer>

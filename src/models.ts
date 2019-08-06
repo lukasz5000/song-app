@@ -1,13 +1,20 @@
-export type CoordinatesElement = {
-    longitude: number;
-    latitude: number;
-    id?: number;
-}
-export type CoordinatesList = Array<CoordinatesElement>;
+export type SongDto = {
+    band: string;
+    album: string;
+    song: string;
+};
 
-export type DrawCallback = (coordinates: CoordinatesElement) =>  void;
+export type Album = {
+    id: number;
+    band: string;
+    name: string;
+    songs: string[];
+};
 
-export type CoordinatesState = {
-    coordinates: CoordinatesList;
-    newCoordinates: CoordinatesList;
-}
+export type Collapsable<T> = {
+    isOpen: boolean;
+} & T;
+
+export type AlbumsState = {
+    albums: Collapsable<Album>[];
+};
