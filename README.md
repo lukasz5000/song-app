@@ -23,6 +23,10 @@ mock server will work on http://localhost:4000
 
 start mock backend 
 
+### `yarn test --coverage --watchAll=false`
+
+run tests and display coverage
+
 ### `yarn run build`
 
 Builds the app for production to the `build` folder.<br>
